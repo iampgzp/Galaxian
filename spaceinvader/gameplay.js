@@ -8,12 +8,14 @@ window.onload = function() {
     var player;
     var shoot;
     var canShoot;
+    var monsters;
     var score = 0;
+    
     function preload () {
 
         game.load.image('airplane', 'airplane.png');
         game.load.image('bullet','bullet.png');
-
+	game.load.image('monster', 'monster.png');
     }
 
     function create () {
@@ -25,8 +27,21 @@ window.onload = function() {
 
         player.body.bounce.y = 0.2;
         player.body.collideWorldBounds = true;
-
-
+	
+	// Create monsters
+	monsters = game.add.group();
+	monsters.enableBody = true;
+	for (var i = 0; i < 4; ++i)
+	{
+	    var monster = monsters.create(400, i * 30 + 150, 'monster');
+	    for (var j = 0; j < 5; ++j)
+	    {
+		var monster = monsters.create(400 + j * 30, i * 30 + 150, 'monster');
+		var monster = monsters.create(400 - j * 30, i * 30 + 150, 'monster');
+		//monster.animations.add();
+	    }
+	}
+	
         shoot = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
         game.time.events.loop(Phaser.Timer.SECOND*0.3, allowShooting, this);
@@ -102,13 +117,24 @@ window.onload = function() {
 
         if (shoot.isDown && canShoot){
 
-            var bullet = game.add.sprite(player.x, player.y, 'bullet');
+            var bullet = game.add.sprite(player.x, player.y - 30, 'bullet');
             bullet.scale.setTo(0.5,0.5);
             bullet.anchor.setTo(0.5, 0.5);
             game.physics.arcade.enable(bullet);
-            bullet.body.velocity.y = -10000;
+            bullet.body.velocity.y = -1000;
             //canShoot = false;
         }
 
+	// Collide Setting
+	game.physics.arcade.collide(player, monsters);
+	game.physics.arcade.overlap(bullet, monsters, killMonster, null, this);
+    }
+
+    function killMonster (bullet, monster)
+    {
+	//monster dying animation
+	monster.kill();
+	bullet.kill();
+	//score change
     }
 };
