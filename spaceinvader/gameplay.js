@@ -4,6 +4,7 @@
 
 const SPEED = 1;
 const BULLETSPEED = 1;
+const MONSTERSPEED = 10;
 
 window.onload = function() {
 
@@ -11,7 +12,7 @@ window.onload = function() {
     var player;
     var monsters;
     var bullets;
-    var monsterSpeed=100;
+    var monsterSpeed = 100;
     var canShoot;
 
     var cursor;
@@ -25,7 +26,7 @@ window.onload = function() {
         // load assets
         game.load.image('airplane', 'airplane.png');
         game.load.image('bullet','bullet.png');
-	    game.load.image('monster', 'monster.png');
+	game.load.spritesheet('monster', 'Monster_SpriteSheet.png', 40, 40);
     }
 
     function create () {
@@ -55,15 +56,25 @@ window.onload = function() {
         // Create monsters
         monsters = game.add.group();
         monsters.enableBody = true;
+	monsters.physicsBodyType = Phaser.Physics.ARCADE;
         for (var i = 0; i < 4; ++i) {
-            var monster = monsters.create(400, i * 30 + 150, 'monster');
+            var monster = monsters.create(400, i * 50 + 100, 'monster');
+	    monster.body.collideWorldBounds = true;
+	    monster.animations.add('move');
+	    monster.animations.play('move', 2, true);
             for (var j = 1; j < 5; ++j) {
-            var monster = monsters.create(400 + j * 30, i * 30 + 150, 'monster');
-            var monster = monsters.create(400 - j * 30, i * 30 + 150, 'monster');
+		var monster = monsters.create(400 + j * 50, i * 50 + 100, 'monster');
+		monster.body.collideWorldBounds = true;
+		monster.animations.add('move');
+		monster.animations.play('move', 2, true);
+		var monster = monsters.create(400 - j * 50, i * 50 + 100, 'monster');
+		monster.body.collideWorldBounds = true;
+		monster.animations.add('move');
+		monster.animations.play('move', 2, true);
             }
         }
-        monsters.setAll('body.velocity.x', monsterSpeed);
-        game.time.events.loop(Phaser.Timer.SECOND*2, monsterDir, this);
+	//monsters.setAll('body.velocity.x', monsterSpeed);
+        //game.time.events.loop(Phaser.Timer.SECOND*3, monsterDir, this);
 
         // Create game score
         score_label = game.add.text(20, 20, 'Score', { font: '24px Arial', fill: '#fff'});
@@ -105,12 +116,20 @@ window.onload = function() {
         // Move the monsters
 
         //console.log("User '%s' not authenticated.", monsters.getBounds.x);
-        if (monsters.getBounds.left < 100){
-            monsters.setAll('body.velocity.x', 100);
-        }else if (monsters.getBounds.left + monsters.getBounds.width > 700){
-            monster.setAll('body.velocity.x', -100);
-        }
+        //if (monsters.getBounds.left < 100){
+        //monsters.setAll('body.velocity.x', 100);
+        //}else if (monsters.getBounds.left + monsters.getBounds.width > 700){
+        //monster.setAll('body.velocity.x', -100);
+	//}
 
+	//if (monsters.checkAll('Body.x', 50) == true)
+	//{
+	//    monsters.setAll('body.velocity.x', 100);
+	//} else if (monsters.checkAll('Body.x', 750))
+	//{
+	//    monsters.setAll('body.velocity.x', -100);
+	//}
+	
         // Shoot
         if (shootKey.isDown && canShoot){
             var bullet = bullets.create(player.x, player.y - 30, 'bullet');
